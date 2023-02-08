@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Weapons : MonoBehaviour
+public class Weapons : NetworkBehaviour
 {
-	public Transform camera;
+	public Transform cameraTransform;
 
 	public Animator itemSlotAnimator;
 	[HideInInspector]
@@ -25,11 +24,15 @@ public class Weapons : MonoBehaviour
 
     void Start()
     {
-        SelectWeapon();
+		if (!IsOwner) return;
+
+		SelectWeapon();
     }
 
 	private void Update()
 	{
+		if (!IsOwner) return;
+
 		itemInHandAnimator = GameObject.FindGameObjectWithTag("WeaponInHand").GetComponent<Animator>();
 
 		itemSlotAnimator.SetBool("isADS", isADS);
@@ -83,7 +86,7 @@ public class Weapons : MonoBehaviour
 		{
 
 			RaycastHit hit;
-			if(Physics.Raycast(camera.position, camera.transform.forward, out  hit, guns[selectedGunTypeIdx].gunRange) && currentMagFill > 0 && Time.time >= cooldownTime)
+			if(Physics.Raycast(cameraTransform.position, cameraTransform.transform.forward, out  hit, guns[selectedGunTypeIdx].gunRange) && currentMagFill > 0 && Time.time >= cooldownTime)
 			{
 				itemInHandAnimator.SetTrigger("isFiring");
 
@@ -112,7 +115,7 @@ public class Weapons : MonoBehaviour
 		if (Input.GetButton("Fire1") && isADS)
 		{
 			RaycastHit hit;
-			if (Physics.Raycast(camera.position, camera.transform.forward, out hit, guns[selectedGunTypeIdx].gunRange) && currentMagFill > 0 && Time.time >= cooldownTime)
+			if (Physics.Raycast(cameraTransform.position, cameraTransform.transform.forward, out hit, guns[selectedGunTypeIdx].gunRange) && currentMagFill > 0 && Time.time >= cooldownTime)
 			{
 				itemInHandAnimator.SetTrigger("isFiring");
 
